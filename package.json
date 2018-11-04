@@ -33,5 +33,10 @@
   "homepage": "https://github.com/alexindigo/install-peers#readme",
   "dependencies": {
     "executioner": "^2.0.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.1.2",
+    "@babel/core": "^7.1.2",
+    "@babel/preset-env": "^7.1.0"
   }
 }
