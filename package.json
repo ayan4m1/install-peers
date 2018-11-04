@@ -7,8 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "babel -d lib -w src",
     "build": "babel -d lib src",
+    "clean": "rm -rf lib/",
     "prepare": "npm run build",
-    "postinstall": "node lib/install.js"
+    "postinstall": "npm run build && node lib/install.js"
   },
   "repository": {
     "type": "git",
