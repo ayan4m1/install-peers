@@ -1,42 +1,32 @@
-// do it inline in sync way
-// to make it work in non-npm environment
-var npmBin
-  , executioner
-  , path = require('path')
-  , node = process.argv[0]
-  ;
+import path from 'path';
 
-if (process.env['npm_execpath']) {
-  var execPath = process.env['npm_execpath'];
-  var expectedPath = path.join('bin', 'npm-cli.js');
+import Installer from './Installer';
 
-  if (execPath.slice(-1 * expectedPath.length) === expectedPath) {
-    npmBin = path.resolve(execPath);
+export default class NpmInstaller extends Installer {
+  constructor() {
+    super();
+    this.execPath = process.env['npm_execpath'];
+    this.expectedPath = path.join('bin', 'npm-cli.js');
+    console.dir(this);
   }
-}
 
-// if no npm module found, don't expose any function
-// to allow upstream modules find alternatives
-module.exports = null;
+  get shouldRun() {
+    console.dir(this);
+    return this.execPath.slice(-this.expectedPath.length) === this.expectedPath;
+  }
 
-if (npmBin) {
-  executioner = require('executioner');
+  get name() {
+    return "npm";
+  }
 
-  module.exports = function(packages, config, done) {
-    var options = {
-      node    : node,
-      npm     : npmBin,
-      // escape package name@versions
-      packages: packages.map((pkg) => '"' + pkg + '"').join(' ')
+  get command() {
+    return '"${node}" "${npm}" install --no-save --no-package-lock ${packages}';
+  }
+
+  get args() {
+    return {
+      npm: path.resolve(execPath) 
     };
-
-    executioner('"${node}" "${npm}" install --no-save --no-package-lock ${packages}', options, function (error, result) {
-      if (error) {
-        console.error('Unable to install peerDependencies', error);
-        process.exit(1);
-        return;
-      }
-      done(result);
-    });
   }
 }
+

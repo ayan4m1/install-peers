@@ -5,11 +5,11 @@
   "main": "lib/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "babel -d lib -w src",
+    "develop": "babel -d lib -w src",
     "build": "babel -d lib src",
     "clean": "rm -rf lib/",
-    "prepare": "npm run build",
-    "postinstall": "npm run build && node lib/install.js"
+    "prepare": "npm install && npm run build",
+    "postinstall": "node lib/install.js"
   },
   "repository": {
     "type": "git",
@@ -36,7 +36,8 @@
   },
   "homepage": "https://github.com/alexindigo/install-peers#readme",
   "dependencies": {
-    "executioner": "^2.0.1"
+    "executioner": "^2.0.1",
+    "q": "^1.5.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.2",
