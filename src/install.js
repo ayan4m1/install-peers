@@ -1,11 +1,52 @@
-import fs from 'fs';
 import path from 'path';
 
+const envKey = 'INSTALLING_PEERS';
+if (process.env[envKey]) {
+  console.dir('exiting because we are already installing');
+  process.exit(0);
+}
+
+process.env[envKey] = 1;
 
 let rootPath = process.env.INIT_CWD || path.resolve(process.cwd(), '..', '..');
 
+// in npm@3+ preinstall happens in `node_modules/.staging` folder
+// so if we end up in `node_modules/` jump one level up
+if (path.basename(rootPath) === 'node_modules') {
+  rootPath = path.resolve(rootPath, '..');
+}
+
 import NpmInstaller from './npm-installer.js';
 import YarnInstaller from './yarn-installer.js';
+
+const installers = [
+  new NpmInstaller(),
+  new YarnInstaller()
+];
+
+let found = false;
+
+for (const installer of installers) {
+  console.log(`considering tool ${installer.name}`);
+  if (installer.shouldRun) {
+    console.log(`running tool ${installer.name}`);
+    process.chdir(rootPath);
+    console.dir(rootPath);
+    installer.install().finally(() => {
+      console.log('done!');
+      delete process.env[envKey];
+    });
+    found = true;
+    break;
+  }
+}
+
+if (!found) {
+  console.error('Did not find a viable package manager to install dependencies with.');
+  process.exit(1);
+}
+
+/*let rootPath = process.env.INIT_CWD || path.resolve(process.cwd(), '..', '..');
 const envLabel = 'skip_install_peers_as_dev';
 const defaultOptions = {
   'save': false,
@@ -14,11 +55,6 @@ const defaultOptions = {
   'save-optional': false,
   'save-prod': false
 };
-
-const installers = [
-  new NpmInstaller(),
-  new YarnInstaller()
-];
 
 // in npm@3+ preinstall happens in `node_modules/.staging` folder
 // so if we end up in `node_modules/` jump one level up
@@ -123,3 +159,4 @@ const parseConfig = (config) => {
 
   return config;
 };
+*/
