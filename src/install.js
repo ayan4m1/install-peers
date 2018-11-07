@@ -1,10 +1,11 @@
 import fs from 'fs';
 import path from 'path';
 
-import NpmInstaller from './install-npm.js';
-import YarnInstaller from './install-yarn.js';
 
 let rootPath = process.env.INIT_CWD || path.resolve(process.cwd(), '..', '..');
+
+import NpmInstaller from './npm-installer.js';
+import YarnInstaller from './yarn-installer.js';
 const envLabel = 'skip_install_peers_as_dev';
 const defaultOptions = {
   'save': false,

@@ -1,4 +1,3 @@
-import Q from 'q';
 import executioner from 'executioner';
 
 const errors = {
@@ -11,13 +10,6 @@ export default class Installer {
   constructor() {
     if (this.constructor === Installer) {
       throw errors.noInstantiate;
-    }
-
-    if (this.shouldRun === Installer.prototype.shouldRun ||
-      this.command === Installer.prototype.command ||
-      this.args === Installer.prototype.args ||
-      this.name === Installer.prototype.name) {
-      throw errors.missingMethods;
     }
   }
 
@@ -37,33 +29,28 @@ export default class Installer {
     throw errors.calledSuperMethod;
   }
 
-  install(packages) {
-    if (!shouldRun) {
+  async install() {
+    if (!this.shouldRun) {
       return;
     }
 
-    console.dir(this.args);
-    console.dir(this.command);
-
-    const installed = Q.defer();
+    // todo: get packages from analyzer
+    const packages = ['react-dom'];
     const options = {
       node: process.argv[0],
-      command: this.command,
       packages: packages.map((pkg) => `"${pkg}"`).join(' '),
       ...this.args
     };
 
-    console.dir(options);
+    return new Promise((resolve, reject) => {
+      executioner(this.command, options, (error, result) => {
+        if (error) {
+          reject(error);
+          return;
+        }
 
-    executioner(this.command, options, (error, result) => {
-      if (error) {
-        installed.reject(error);
-        return;
-      }
-
-      installed.resolve(result);
+        resolve(result);
+      });
     });
-
-    return installed.promise;
   }
 }

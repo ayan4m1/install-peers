@@ -7,11 +7,9 @@ export default class NpmInstaller extends Installer {
     super();
     this.execPath = process.env['npm_execpath'];
     this.expectedPath = path.join('bin', 'npm-cli.js');
-    console.dir(this);
   }
 
   get shouldRun() {
-    console.dir(this);
     return this.execPath.slice(-this.expectedPath.length) === this.expectedPath;
   }
 
@@ -25,7 +23,7 @@ export default class NpmInstaller extends Installer {
 
   get args() {
     return {
-      npm: path.resolve(execPath) 
+      npm: path.resolve(this.execPath)
     };
   }
 }
