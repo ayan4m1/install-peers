@@ -1,12 +1,20 @@
-import path from 'path';
-
-const envKey = 'INSTALLING_PEERS';
-if (process.env[envKey]) {
-  console.dir('exiting because we are already installing');
+if (process.env.NODE_ENV === 'production') {
+  console.log('Skipping peer dependency installation!');
   process.exit(0);
 }
 
-process.env[envKey] = 1;
+import path from 'path';
+
+import Locker from './locker';
+import NpmInstaller from './npm-installer';
+import YarnInstaller from './yarn-installer';
+import PNpmInstaller from './pnpm-installer';
+import PeerResolver from './peer-resolver';
+
+if (!Locker.claim()) {
+  console.dir('Skipping peer dependency installation as it is already running!');
+  process.exit(0);
+}
 
 let rootPath = process.env.INIT_CWD || path.resolve(process.cwd(), '..', '..');
 
@@ -16,147 +24,44 @@ if (path.basename(rootPath) === 'node_modules') {
   rootPath = path.resolve(rootPath, '..');
 }
 
-import NpmInstaller from './npm-installer.js';
-import YarnInstaller from './yarn-installer.js';
-
+const resolver = new PeerResolver(rootPath);
 const installers = [
   new NpmInstaller(),
-  new YarnInstaller()
+  new YarnInstaller(),
+  new PNpmInstaller()
 ];
 
 let found = false;
-
 for (const installer of installers) {
-  console.log(`considering tool ${installer.name}`);
-  if (installer.shouldRun) {
-    console.log(`running tool ${installer.name}`);
-    process.chdir(rootPath);
-    console.dir(rootPath);
-    installer.install().finally(() => {
-      console.log('done!');
-      delete process.env[envKey];
-    });
-    found = true;
-    break;
+  if (!installer.shouldRun) {
+    continue;
   }
+
+  process.chdir(rootPath);
+
+  resolver
+    .packages()
+    .then((packages) => {
+      console.log(`Installing ${packages.length} package${packages.length > 1 ? 's' : ''} using ${installer.name}...`);
+      return installer
+        .install(packages)
+        .then((result) => {
+          console.log(`\n${result}\n`);
+        })
+        .catch((error) => {
+          console.error(error);
+          process.exit(1);
+        });
+    })
+    .catch(console.error)
+    .finally(Locker.release);
+
+  found = true;
+  break;
 }
 
 if (!found) {
-  console.error('Did not find a viable package manager to install dependencies with.');
+  Locker.release();
+  console.error('Did not find a viable package manager to install peer dependencies with!');
   process.exit(1);
 }
-
-/*let rootPath = process.env.INIT_CWD || path.resolve(process.cwd(), '..', '..');
-const envLabel = 'skip_install_peers_as_dev';
-const defaultOptions = {
-  'save': false,
-  'save-bundle': false,
-  'save-dev': false,
-  'save-optional': false,
-  'save-prod': false
-};
-
-// in npm@3+ preinstall happens in `node_modules/.staging` folder
-// so if we end up in `node_modules/` jump one level up
-if (path.basename(rootPath) === 'node_modules') {
-  rootPath = path.resolve(rootPath, '..');
-}
-
-// check for the "kill switch"
-if (process.env[envLabel]) {
-  console.log('Skipping installing peerDependencies as devDependencies.');
-  process.exit(0);
-}
-
-// yo, do not install peers while installing peers
-process.env[envLabel] = '1';
-
-getPackageConfig(rootPath, (config) => {
-  const peerDeps = getPeerDeps(config);
-  const peerInstallOptions = getPeerInstallOptions(config);
-
-  if (!peerDeps) {
-    console.error(`Unable to find peerDependencies in ${rootPath}`);
-    return;
-  }
-
-  // ready to install, switch directories
-  process.chdir(rootPath);
-
-  let found = false;
-  for (const installer of installers) {
-    if (!installer.shouldRun) {
-      console.error(`skipping ${installer.command}`);
-    }
-
-    found = true;
-    installer.install().then(installDone.bind(null, installer.name));
-  }
-
-  if (found === false) {
-    console.error('Did not find a viable package manager to install dependencies with.');
-  }
-});
-
-const installDone = (tool, result) => {
-  // cleanup env
-  delete process.env[envLabel];
-
-  console.log(`Installed peerDependencies as devDependencies via ${tool}.\n\n`);
-  console.log(result);
-};
-
-const getPeerDeps = (config) => {
-  let peerDeps;
-
-  if (typeof config.peerDependencies === 'object' && !Array.isArray(config.peerDependencies)) {
-    peerDeps = Object.keys(config.peerDependencies).map(function (name) {
-      return `${name}@${config.peerDependencies[name]}`;
-    });
-  }
-
-  return peerDeps;
-};
-
-const getPeerInstallOptions = (config) => {
-  const peerInstallOptions = Object.assign({}, defaultOptions);
-
-  if (typeof config.peerInstallOptions === 'object' && !Array.isArray(config.peerInstallOptions)) {
-    Object.keys(config.peerInstallOptions).forEach(function (key) {
-      peerInstallOptions[key] = config.peerInstallOptions[key];
-    });
-  }
-
-  return peerInstallOptions;
-};
-
-const getPackageConfig = (packagePath, callback) => {
-  const packageFile = path.join(packagePath, 'package.json');
-
-  fs.readFile(packageFile, 'utf-8', function (error, content) {
-    if (error || !content) {
-      console.error(`Unable to read ${packageFile}: ${error || 'no content'}`);
-      return;
-    }
-
-    const config = parseConfig(content);
-
-    if (config.isParseConfigFailed) {
-      console.error(`Unable to parse ${packageFile}`, config.error);
-      return;
-    }
-
-    callback(config);
-  });
-};
-
-const parseConfig = (config) => {
-  try {
-    config = JSON.parse(config);
-  } catch (error) {
-    config = {isParseConfigFailed: true, error: error};
-  }
-
-  return config;
-};
-*/

@@ -29,13 +29,11 @@ export default class Installer {
     throw errors.calledSuperMethod;
   }
 
-  async install() {
+  install(packages) {
     if (!this.shouldRun) {
       return;
     }
 
-    // todo: get packages from analyzer
-    const packages = ['react-dom'];
     const options = {
       node: process.argv[0],
       packages: packages.map((pkg) => `"${pkg}"`).join(' '),

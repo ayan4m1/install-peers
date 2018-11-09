@@ -27,4 +27,3 @@ export default class NpmInstaller extends Installer {
     };
   }
 }
-

@@ -18,14 +18,12 @@ export default class YarnInstaller extends Installer {
   }
 
   get command() {
-    return '"${node}" "${yarn}" add --peer --no-lockfile ${packages}"';
+    return '"${node}" "${yarn}" add --peer --no-lockfile ${packages}';
   }
 
   get args() {
     return {
-      yarn: path.resolve(this.execPath, '..', '..', 'lib', 'cli')
+      yarn: path.resolve(this.execPath, '..', '..', 'lib', 'cli.js')
     };
   }
 }
-
-
