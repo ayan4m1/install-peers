@@ -1,7 +1,7 @@
 {
   "name": "install-peers",
   "version": "2.0.0",
-  "description": "Automatically installs project's peerDependencies (as devDependencies)",
+  "description": "Automatically install peerDependencies in non-production environments.",
   "main": "lib/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -26,6 +26,7 @@
     "automatically",
     "npm",
     "yarn",
+    "pnpm",
     "nvm",
     "local"
   ],
