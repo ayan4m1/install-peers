@@ -46,12 +46,12 @@ To get started, run the following commands in the `install-peers` directory:
 
 ```
 $ npm install --ignore-scripts
-$ npm run develop
+$ npx gulp watch
 ```
 
-This will start Babel in "watch" mode, so that any changes made to files in `src/` will be recompiled to `lib/` on the fly.
+This will set a watcher on the files in `src/`, so that any changes made to files will be recompiled to `lib/` on the fly.
 
-You will need a test project of some sort. In your test project's `package.json`, add:
+To validate the operation of the script, you will need a test project of some sort. In your test project's `package.json`, add:
 
 ```
 "devDependencies": {

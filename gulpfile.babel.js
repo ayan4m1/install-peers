@@ -22,7 +22,6 @@ const clean = () => del(lib);
 
 gulp.task('lint', lint);
 gulp.task('build', build);
-gulp.task('develop', watch);
-gulp.task('watch', watch);
+gulp.task('watch', gulp.series(build, watch));
 gulp.task('clean', clean);
 gulp.task('default', gulp.series(clean, lint, build));
