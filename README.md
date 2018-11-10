@@ -27,12 +27,12 @@ $ pnpm install -D --ignore-scripts install-peers
 
 ## Usage
 
-`install-peers` supports the NPM, Yarn, and PNPM package managers.
+`install-peers` supports the NPM, Yarn, and pnpm package managers.
 Simply add `install-peers` to the `devDependencies` of your package, then run your package manager's `install` command.
 
 _You may still see "unmet peer dependency" warnings, as the package manager is unaware of the installation this package performs._
 
-The package manager will be instructed not to create any lock/shrinkwrap files.
+The package manager will be instructed not to create any lock/shrinkwrap files. If you use pnpm, you may see a warning to this effect.
 
 ## Development
 
