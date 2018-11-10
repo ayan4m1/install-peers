@@ -1,22 +1,34 @@
-const errors = {
-  noInstantiate: new TypeError('This class should not be instantiated.'),
-  missingMethods: new TypeError('This class does not implement the required methods.'),
-  calledSuperMethod: new TypeError('This method has not been overridden by the child class.')
-};
+import fs from 'fs';
+import path from 'path';
 
 export default class Resolver {
-  constructor() {
-    if (this.constructor === Resolver) {
-      throw errors.noInstantiate;
-    }
-
-    if (this.packages === Resolver.prototype.packages) {
-      throw errors.missingMethods;
-    }
+  constructor(rootPath) {
+    this.packageJson = path.resolve(rootPath, 'package.json');
   }
 
   packages() {
-    throw errors.calledSuperMethod;
+    return new Promise((resolve, reject) => {
+      fs.readFile(this.packageJson, 'utf8', (error, content) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+
+        try {
+          const config = JSON.parse(content);
+          const peerDeps = config.peerDependencies || [];
+
+          if (typeof peerDeps !== 'object' || Array.isArray(peerDeps)) {
+            reject(new Error(`Did not find a valid peerDependencies object in ${this.packageJson}`));
+            return;
+          }
+
+          resolve(Object.keys(peerDeps).map((name) => `${name}@${peerDeps[name]}`));
+        } catch (parseError) {
+          reject(parseError);
+        }
+      });
+    });
   }
 }
 

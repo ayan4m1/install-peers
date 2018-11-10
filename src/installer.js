@@ -2,7 +2,7 @@ import executioner from 'executioner';
 
 const errors = {
   noInstantiate: new TypeError('This class should not be instantiated.'),
-  missingMethods: new TypeError('This class does not implement the required methods.'),
+  shouldNotRun: new TypeError('Install was attempted with an unsuitable tool.'),
   calledSuperMethod: new TypeError('This method has not been overridden by the child class.')
 };
 
@@ -11,17 +11,15 @@ export default class Installer {
     if (this.constructor === Installer) {
       throw errors.noInstantiate;
     }
+
+    this.execPath = process.env['npm_execpath'];
   }
 
   get shouldRun() {
-    throw errors.calledSuperMethod;
+    return this.execPath.slice(-this.expectedPath.length) === this.expectedPath;
   }
 
-  get name() {
-    throw errors.calledSuperMethod;
-  }
-
-  get command() {
+  get expectedPath() {
     throw errors.calledSuperMethod;
   }
 
@@ -31,7 +29,7 @@ export default class Installer {
 
   install(packages) {
     if (!this.shouldRun) {
-      return;
+      throw errors.shouldNotRun;
     }
 
     const options = {
@@ -41,7 +39,7 @@ export default class Installer {
     };
 
     return new Promise((resolve, reject) => {
-      executioner(this.command, options, (error, result) => {
+      executioner('"${node}" "${script}" ${command} ${packages}', options, (error, result) => {
         if (error) {
           reject(error);
           return;
