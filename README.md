@@ -8,19 +8,19 @@ Automatically installs a project's peerDependencies in non-production environmen
 
 ## Installation
 
-### NPM
+### npm
 
 ```
 $ npm install --save-dev --ignore-scripts install-peers
 ```
 
-### Yarn
+### yarn
 
 ```
 $ yarn add --dev --ignore-scripts install-peers
 ```
 
-### PNPM
+### pnpm
 ```
 $ pnpm install -D --ignore-scripts install-peers
 ```
