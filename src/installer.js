@@ -12,7 +12,7 @@ export default class Installer {
       throw errors.noInstantiate;
     }
 
-    this.execPath = process.env['npm_execpath'];
+    this.execPath = process.env.npm_execpath;
   }
 
   get shouldRun() {

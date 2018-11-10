@@ -18,6 +18,7 @@ if (path.basename(rootPath) === 'node_modules') {
   rootPath = path.resolve(rootPath, '..');
 }
 
+let found;
 const resolver = new Resolver(rootPath);
 const installers = [
   new NpmInstaller(),
@@ -25,7 +26,6 @@ const installers = [
   new PNpmInstaller()
 ];
 
-let found = false;
 for (const installer of installers) {
   if (!installer.shouldRun) {
     continue;
