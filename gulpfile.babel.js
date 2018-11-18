@@ -11,7 +11,9 @@ const lib = './lib/';
 
 const lint = () =>
   gulp.src(src)
-    .pipe(eslint());
+    .pipe(eslint())
+    .pipe(eslint.format())
+    .pipe(eslint.failAfterError());
 
 const build = () =>
   gulp.src(src)
