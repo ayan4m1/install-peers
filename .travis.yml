@@ -4,7 +4,6 @@ node_js:
   - '10'
   - '8'
   - '6'
-cache:
-  directories:
-    - 'node_modules'
+cache: npm
+install: npm install --ignore-scripts
 script: gulp test
