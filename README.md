@@ -21,6 +21,7 @@ $ yarn add --dev --ignore-scripts install-peers
 ```
 
 ### pnpm
+
 ```
 $ pnpm install -D --ignore-scripts install-peers
 ```
