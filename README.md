@@ -51,7 +51,18 @@ $ npx gulp watch
 
 This will set a watcher on the files in `src/`, so that any changes made to files will be recompiled to `lib/` on the fly.
 
-To validate the operation of the script, you will need a test project of some sort. In your test project's `package.json`, add:
+To validate the operation of the script, you can either run the test suite or manually test using a dummy project.
+
+### Automated
+
+Execute `npx gulp test` to run the entire test suite. You can use `npx jest [regex]` to run tests more selectively.
+
+Currently, PNPM does not have a full test suite because PNPM does not execute `postinstall` scripts when a package is
+referred to by path. Use of a private NPM registry that allows redeployment provides a workaround for development purposes.
+
+### Manual
+
+Create a new directory. Run `npm init` inside it. In the newly created `package.json`, add:
 
 ```
 "devDependencies": {
@@ -62,11 +73,6 @@ To validate the operation of the script, you will need a test project of some so
 Now you can use a package manager with your test project to trigger `install-peers` from your local environment.
 
 Make sure you delete `node-modules` as well as any lock/shrinkwrap files every time you want to re-test `install-peers`, as the script only fires when the package is first installed.
-
-## Known Issues
-
-PNPM does not execute `postinstall` scripts when a package is referred to by file (for an example, see the "Development"
-section of this document. Use of a private NPM registry that allows redeployment provides a workaround for development purposes.
 
 ## License
 
