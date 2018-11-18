@@ -1,6 +1,6 @@
 import path from 'path';
 
-import Installer from './Installer';
+import Installer from './installer';
 
 export default class NpmInstaller extends Installer {
   get expectedPath() {
