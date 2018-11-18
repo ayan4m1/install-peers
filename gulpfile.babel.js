@@ -21,13 +21,13 @@ const build = () =>
     .pipe(minify())
     .pipe(gulp.dest(lib));
 
-const watch = () => gulp.watch(src, build);
 const clean = () => del(lib);
+const watch = () => gulp.watch(src, build);
 const test = () => gulp.src(tests).pipe(jest());
 
 gulp.task('lint', lint);
 gulp.task('test', test);
 gulp.task('build', build);
-gulp.task('watch', gulp.series(build, watch));
 gulp.task('clean', clean);
+gulp.task('watch', gulp.series(build, watch));
 gulp.task('default', gulp.series(clean, lint, build));
