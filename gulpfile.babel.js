@@ -26,8 +26,8 @@ const watch = () => gulp.watch(src, build);
 const test = () => gulp.src(tests).pipe(jest());
 
 gulp.task('lint', lint);
-gulp.task('test', test);
 gulp.task('build', build);
 gulp.task('clean', clean);
+gulp.task('test', gulp.series(build, test));
 gulp.task('watch', gulp.series(build, watch));
 gulp.task('default', gulp.series(clean, lint, build));
