@@ -4,7 +4,7 @@ import Installer from './installer';
 
 export default class YarnInstaller extends Installer {
   get expectedPath() {
-    return path.join('yarn', 'bin', 'yarn.js');
+    return path.join('bin', 'yarn.js');
   }
 
   get args() {
